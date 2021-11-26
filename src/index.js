@@ -16,9 +16,8 @@ app.use(express.static(publicDirectoryPath)) //app.use => middleware layer ////e
 io.on('connection', (socket) => {
     console.log("New Connection Estabilished!!");
 
-    socket.on('welcome', (userName) => {
-        socket.broadcast.emit('welcomeMessage', `${userName} joined the chat...`)
-    })
+    socket.emit('welcomeMessage', 'Welcome!');
+    socket.broadcast.emit('welcomeMessage', `A new user joined the chat...`)
 
     socket.on('send', (msg, callback) => {
         const filter = new Filter();

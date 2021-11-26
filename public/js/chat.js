@@ -14,7 +14,6 @@ const messageTemplate = document.querySelector('#message-template').innerHTML;
 const locationTemplate = document.querySelector('#location-template').innerHTML;
 
 // welcome user
-socket.emit("welcome", userName);
 socket.on('welcomeMessage', (msg) => {
     console.log(msg);
     $container.innerHTML += `<h6>${msg}</h6>`;
