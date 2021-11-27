@@ -3,11 +3,13 @@ const path = require('path');
 const http = require('http');
 const socketio = require('socket.io');
 const Filter = require('bad-words')
+const { generateMessages } = require('./utils/messages')
 
 const app = express();
 const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 const io = socketio(server)
+
 
 const publicDirectoryPath = path.join(__dirname, '../public');
 
@@ -16,14 +18,14 @@ app.use(express.static(publicDirectoryPath)) //app.use => middleware layer ////e
 io.on('connection', (socket) => {
     console.log("New Connection Estabilished!!");
 
-    socket.emit('welcomeMessage', 'Welcome!');
-    socket.broadcast.emit('welcomeMessage', `A new user joined the chat...`)
+    socket.emit('message', generateMessages('Welcome!'));
+    socket.broadcast.emit('message', generateMessages(`A new user joined the chat...`))
 
     socket.on('send', (msg, callback) => {
         const filter = new Filter();
         if (filter.isProfane(msg.message)) return callback('Profanity is not allowed!!');
 
-        io.emit('received', msg);
+        io.emit('message', generateMessages(msg));
         callback()
 
     })
@@ -34,7 +36,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('disconnect', () => {
-        io.emit('left')
+        io.emit('message', generateMessages('A user left the chat'))
     })
 
 

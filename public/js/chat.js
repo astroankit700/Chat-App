@@ -14,10 +14,13 @@ const messageTemplate = document.querySelector('#message-template').innerHTML;
 const locationTemplate = document.querySelector('#location-template').innerHTML;
 
 // welcome user
-socket.on('welcomeMessage', (msg) => {
-    console.log(msg);
-    $container.innerHTML += `<h6>${msg}</h6>`;
-})
+// socket.on('message', (message) => {
+//     const html = Mustache.render(messageTemplate, {
+//         message: message.text
+//     });
+//     console.log(message);
+//     $container.insertAdjacentHTML('beforeend', html);
+// })
 
 // sending message
 $messageForm.addEventListener('submit', (e) => {
@@ -26,7 +29,7 @@ $messageForm.addEventListener('submit', (e) => {
     //disabling button
     $messageFormBtn.setAttribute('disabled', 'disabled');
 
-    socket.emit('send', { userName, message: $messsageBox.value }, (error) => {
+    socket.emit('send', $messsageBox.value, (error) => {
         //re-enabling buttons
         $messageFormBtn.removeAttribute('disabled', 'disabled');
         $messageForm.reset();
@@ -38,19 +41,15 @@ $messageForm.addEventListener('submit', (e) => {
 });
 
 //receiving message
-socket.on('received', ({ userName, message }) => {
+socket.on('message', (message) => {
     const html = Mustache.render(messageTemplate, {
-        message
+        message: message.text,
+        createdAt: moment(message.createdAt).format("h:mm a")
     })
     $container.insertAdjacentHTML('beforeend', html)
 
     // $container.innerHTML += `<p><b>${userName}</b>: ${message} </p>`;
     console.log(message);
-})
-
-//some other user disconnected
-socket.on('left', () => {
-    $container.innerHTML += '<h6>A user left the chat</h6>'
 })
 
 //sending location
