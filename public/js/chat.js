@@ -62,11 +62,8 @@ $locationBtn.addEventListener('click', (e) => {
         // console.log('click');
         // console.log(position);
         socket.emit('sendLocation', {
-            userName,
-            location: {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude
-            }
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
         }, () => {
             $locationBtn.removeAttribute('disabled');
             console.log('Location Shared!');
@@ -76,7 +73,8 @@ $locationBtn.addEventListener('click', (e) => {
 
 socket.on('locationMessage', (location) => {
     const html = Mustache.render(locationTemplate, {
-        url: location.url
+        url: location.url,
+        createdAt: moment(location.createdAt).format('h:mm a')
     });
     $container.insertAdjacentHTML('beforeend', html);
     console.log(location.url);
