@@ -1,7 +1,5 @@
 const socket = io();
 
-const userName = prompt("Please Enter your name", "Anonymous");
-
 // Elements
 const $messsageBox = document.querySelector('#messageBox');
 const $messageForm = document.querySelector('#message-form');
@@ -13,14 +11,7 @@ const $container = document.querySelector('#messages');
 const messageTemplate = document.querySelector('#message-template').innerHTML;
 const locationTemplate = document.querySelector('#location-message-template').innerHTML;
 
-// welcome user
-// socket.on('message', (message) => {
-//     const html = Mustache.render(messageTemplate, {
-//         message: message.text
-//     });
-//     console.log(message);
-//     $container.insertAdjacentHTML('beforeend', html);
-// })
+
 
 // sending message
 $messageForm.addEventListener('submit', (e) => {
@@ -48,7 +39,6 @@ socket.on('message', (message) => {
     })
     $container.insertAdjacentHTML('beforeend', html)
 
-    // $container.innerHTML += `<p><b>${userName}</b>: ${message} </p>`;
     console.log(message);
 })
 
@@ -79,3 +69,5 @@ socket.on('locationMessage', (location) => {
     $container.insertAdjacentHTML('beforeend', html);
     console.log(location.url);
 })
+
+
