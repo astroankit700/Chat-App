@@ -4,14 +4,14 @@ const userName = prompt("Please Enter your name", "Anonymous");
 
 // Elements
 const $messsageBox = document.querySelector('#messageBox');
-const $messageForm = document.querySelector('#messageForm');
+const $messageForm = document.querySelector('#message-form');
 const $messageFormBtn = $messageForm.querySelector('#send');
-const $locationBtn = document.querySelector('#location');
-const $container = document.querySelector('#container');
+const $locationBtn = document.querySelector('#send-location');
+const $container = document.querySelector('#messages');
 
 //templates
 const messageTemplate = document.querySelector('#message-template').innerHTML;
-const locationTemplate = document.querySelector('#location-template').innerHTML;
+const locationTemplate = document.querySelector('#location-message-template').innerHTML;
 
 // welcome user
 // socket.on('message', (message) => {

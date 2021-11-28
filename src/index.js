@@ -23,7 +23,8 @@ io.on('connection', (socket) => {
 
     socket.on('send', (msg, callback) => {
         const filter = new Filter();
-        if (filter.isProfane(msg.message)) return callback('Profanity is not allowed!!');
+        if (filter.isProfane(msg)) return callback('Profanity is not allowed!!');
+
 
         io.emit('message', generateMessages(msg));
         callback()
