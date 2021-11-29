@@ -18,8 +18,13 @@ app.use(express.static(publicDirectoryPath)) //app.use => middleware layer ////e
 io.on('connection', (socket) => {
     console.log("New Connection Estabilished!!");
 
-    socket.emit('message', generateMessages('Welcome!'));
-    socket.broadcast.emit('message', generateMessages(`A new user joined the chat...`))
+
+    socket.on('join', ({ username, room }) => {
+        socket.join(room);
+        socket.emit('message', generateMessages('Welcome!'));
+        socket.broadcast.to(room).emit('message', generateMessages(`${username} joined the chat...`))
+
+    })
 
     socket.on('send', (msg, callback) => {
         const filter = new Filter();

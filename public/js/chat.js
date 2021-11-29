@@ -1,7 +1,7 @@
 const socket = io();
 
 // Elements
-const $messsageBox = document.querySelector('#messageBox');
+const $messageBox = document.querySelector('#message-box');
 const $messageForm = document.querySelector('#message-form');
 const $messageFormBtn = $messageForm.querySelector('#send');
 const $locationBtn = document.querySelector('#send-location');
@@ -11,7 +11,8 @@ const $container = document.querySelector('#messages');
 const messageTemplate = document.querySelector('#message-template').innerHTML;
 const locationTemplate = document.querySelector('#location-message-template').innerHTML;
 
-
+//query string
+const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true });
 
 // sending message
 $messageForm.addEventListener('submit', (e) => {
@@ -20,11 +21,11 @@ $messageForm.addEventListener('submit', (e) => {
     //disabling button
     $messageFormBtn.setAttribute('disabled', 'disabled');
 
-    socket.emit('send', $messsageBox.value, (error) => {
+    socket.emit('send', $messageBox.value, (error) => {
         //re-enabling buttons
         $messageFormBtn.removeAttribute('disabled', 'disabled');
         $messageForm.reset();
-        $messsageBox.focus();
+        $messageBox.focus();
 
         if (error) return console.log(error);
         console.log("This message was delivered!");
@@ -69,5 +70,7 @@ socket.on('locationMessage', (location) => {
     $container.insertAdjacentHTML('beforeend', html);
     console.log(location.url);
 })
+
+socket.emit('join', { username, room });
 
 
