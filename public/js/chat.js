@@ -35,6 +35,7 @@ $messageForm.addEventListener('submit', (e) => {
 //receiving message
 socket.on('message', (message) => {
     const html = Mustache.render(messageTemplate, {
+        username: message.username,
         message: message.text,
         createdAt: moment(message.createdAt).format("h:mm a")
     })
@@ -64,6 +65,7 @@ $locationBtn.addEventListener('click', (e) => {
 
 socket.on('locationMessage', (location) => {
     const html = Mustache.render(locationTemplate, {
+        username: location.username,
         url: location.url,
         createdAt: moment(location.createdAt).format('h:mm a')
     });
@@ -71,6 +73,9 @@ socket.on('locationMessage', (location) => {
     console.log(location.url);
 })
 
-socket.emit('join', { username, room });
-
-
+socket.emit('join', { username, room }, (error) => {
+    if (error) {
+        alert(error);
+        location.href = "/";
+    }
+});

@@ -4,6 +4,7 @@ const http = require('http');
 const socketio = require('socket.io');
 const Filter = require('bad-words')
 const { generateMessages, generateLocationMessages } = require('./utils/messages')
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,30 +20,41 @@ io.on('connection', (socket) => {
     console.log("New Connection Estabilished!!");
 
 
-    socket.on('join', ({ username, room }) => {
-        socket.join(room);
-        socket.emit('message', generateMessages('Welcome!'));
-        socket.broadcast.to(room).emit('message', generateMessages(`${username} joined the chat...`))
+    socket.on('join', (options, callback) => {
+        const { error, user } = addUser({ id: socket.id, ...options });
 
+        if (error) return callback(error);
+
+        socket.join(user.room);
+        socket.emit('message', generateMessages('Admin', 'Welcome!'));
+        socket.broadcast.to(user.room).emit('message', generateMessages("Admin", `${user.username} joined the chat...`));
+        callback()
     })
 
     socket.on('send', (msg, callback) => {
         const filter = new Filter();
         if (filter.isProfane(msg)) return callback('Profanity is not allowed!!');
 
+        const user = getUser(socket.id);
 
-        io.emit('message', generateMessages(msg));
+        io.to(user.room).emit('message', generateMessages(user.username, msg));
         callback()
 
     })
 
     socket.on('sendLocation', (coords, callback) => {
-        io.emit('locationMessage', generateLocationMessages(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
+        const user = getUser(socket.id);
+
+        io.to(user.room).emit('locationMessage', generateLocationMessages(user.username, `https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         callback();
     })
 
     socket.on('disconnect', () => {
-        io.emit('message', generateMessages('A user left the chat'))
+        const user = removeUser(socket.id);
+
+        if (user) {
+            io.to(user.room).emit('message', generateMessages('Admin', `${user.username} left the chat...`))
+        }
     })
 
 
