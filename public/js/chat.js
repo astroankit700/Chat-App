@@ -5,15 +5,42 @@ const $messageBox = document.querySelector('#message-box');
 const $messageForm = document.querySelector('#message-form');
 const $messageFormBtn = $messageForm.querySelector('#send');
 const $locationBtn = document.querySelector('#send-location');
-const $container = document.querySelector('#messages');
+const $messages = document.querySelector('#messages');
 
 //templates
 const messageTemplate = document.querySelector('#message-template').innerHTML;
 const locationTemplate = document.querySelector('#location-message-template').innerHTML;
 const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
 
-//query string
+//options
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true });
+
+const autoscroll = () => {
+    //New message element
+    const $newMessage = $messages.lastElementChild;
+
+    //Height of new message
+    const newMessageStyles = getComputedStyle($newMessage);
+    const newMesageMargin = parseInt(newMessageStyles.marginBottom);
+    const newMessageHeight = $newMessage.offsetHeight + newMesageMargin;
+
+    //visible height
+    const visibleHeight = $messages.offsetHeight;
+
+    // height of the container
+    const containerHeight = $messages.scrollHeight;
+
+    //how far have i scrolled
+    const scrollOffset = $messages.scrollTop + visibleHeight;
+
+    if (scrollOffset >= containerHeight - newMessageHeight) {
+        $messages.scrollTop = $messages.scrollHeight;
+    }
+
+
+
+
+}
 
 // sending message
 $messageForm.addEventListener('submit', (e) => {
@@ -40,9 +67,9 @@ socket.on('message', (message) => {
         message: message.text,
         createdAt: moment(message.createdAt).format("h:mm a")
     })
-    $container.insertAdjacentHTML('beforeend', html)
+    $messages.insertAdjacentHTML('beforeend', html)
 
-    console.log(message);
+    autoscroll();
 })
 
 //room data
@@ -80,8 +107,8 @@ socket.on('locationMessage', (location) => {
         url: location.url,
         createdAt: moment(location.createdAt).format('h:mm a')
     });
-    $container.insertAdjacentHTML('beforeend', html);
-    console.log(location.url);
+    $messages.insertAdjacentHTML('beforeend', html);
+    autoscroll();
 })
 
 socket.emit('join', { username, room }, (error) => {
